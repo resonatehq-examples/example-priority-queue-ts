@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/banner-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/banner-light.png">
+    <img alt="Priority Queue — Resonate example" src="./assets/banner-dark.png">
+  </picture>
+</p>
+
 # Priority Queue
 
 Priority-ordered job execution with bounded concurrency. Processes a batch of mixed-priority jobs in strict tier order: critical jobs complete before high, high before normal, normal before low. Within each tier, up to 2 jobs run concurrently.
