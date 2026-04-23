@@ -156,24 +156,16 @@ example-priority-queue-ts/
 
 **Lines of code**: ~175 total, ~40 lines of workflow logic.
 
-## Comparison
+## Why tier-by-tier iteration is the scheduler
 
-Restate's priority queue (~180 LOC) uses virtual objects, awakeables, and an explicit in-flight counter to coordinate concurrent access. It's a complete queueing system with cancellation support. Hatchet's priority is configured as workflow metadata with a server-side scheduler.
+Priority queues often mean virtual objects, awaiters, in-flight counters, and server-side scheduling infrastructure. This example doesn't reach for any of that. The scheduler is a nested loop.
 
-Resonate's approach: sort by priority, process tier by tier with `beginRun` fan-out. The scheduler is your code. No queueing infrastructure, no awaitable coordination — just sorted iteration with bounded concurrency.
+Sort jobs by priority tier. For each tier, chunk into `MAX_CONCURRENT`-sized slices. Fan out the chunk with `ctx.beginRun()`. Fan in before advancing to the next chunk. Before advancing to the next tier, wait for every chunk in the current tier. Every `yield*` is a checkpoint — a mid-tier crash resumes at the failing job, not the start.
 
-| | Resonate | Restate | Hatchet |
-|---|---|---|---|
-| Priority mechanism | Sort + tier-based fan-out | Virtual object + awakeable | Server-side scheduler |
-| Concurrency control | `beginRun` chunks | In-flight counter | Configured on workflow |
-| Workflow code | ~40 LOC | ~180 LOC | N/A (server-managed) |
-| Infrastructure | None | Restate server | Hatchet server |
-| Cancellation | Not built-in | Built-in | Built-in |
-
-Restate's version handles more edge cases (cancellation, drop, arbitrary in-flight limit). If you need a general-purpose priority queue with those features, Restate has a head start. Resonate's approach is better when priority ordering is one piece of a larger workflow.
+The approach fits when priority ordering is one piece of a larger workflow — a fan-out stage that happens to care about priority. For a standalone queueing system with cancellation, drop semantics, or arbitrary in-flight limits, reach for a purpose-built queue; `example-distributed-mutex-ts` covers the serialized-access primitive underneath.
 
 ## Learn More
 
 - [Resonate documentation](https://docs.resonatehq.io)
-- [Restate priority queue](https://github.com/restatedev/examples/tree/main/typescript/patterns-use-cases/src/priorityqueue)
-- [Hatchet priority](https://docs.hatchet.run/home/features/scheduling/priority)
+- [Distributed mutex](https://github.com/resonatehq-examples/example-distributed-mutex-ts) — serialized-access primitive
+- [Fan-out/fan-in](https://github.com/resonatehq-examples/example-fan-out-fan-in-ts) — concurrency without a scheduler
