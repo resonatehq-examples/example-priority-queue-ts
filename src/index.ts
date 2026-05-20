@@ -66,3 +66,5 @@ if (crashMode) {
     "\nThey were NOT re-run when job-006 retried.",
   );
 }
+
+resonate.stop();
