@@ -6,6 +6,12 @@
   </picture>
 </p>
 
+<p align="center">
+  <a href="https://resonatehq.github.io/examples-ci/">
+    <img src="https://img.shields.io/endpoint?url=https://resonatehq.github.io/examples-ci/status/example-priority-queue-ts.json" alt="examples-ci status">
+  </a>
+</p>
+
 # Priority Queue
 
 Priority-ordered job execution with bounded concurrency. Processes a batch of mixed-priority jobs in strict tier order: critical jobs complete before high, high before normal, normal before low. Within each tier, up to 2 jobs run concurrently.
